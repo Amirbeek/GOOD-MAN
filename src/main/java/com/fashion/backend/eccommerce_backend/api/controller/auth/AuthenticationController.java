@@ -1,5 +1,7 @@
 package com.fashion.backend.eccommerce_backend.api.controller.auth;
 
+import com.fashion.backend.eccommerce_backend.api.model.LoginBody;
+import com.fashion.backend.eccommerce_backend.api.model.LoginResponse;
 import com.fashion.backend.eccommerce_backend.api.model.RegistrationBody;
 import com.fashion.backend.eccommerce_backend.exception.UserAlreadyExistException;
 import com.fashion.backend.eccommerce_backend.service.UserService;
@@ -25,6 +27,17 @@ public class AuthenticationController {
             return ResponseEntity.ok().build();
         } catch (UserAlreadyExistException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+    }
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginBody loginBody) {
+        String jwt = userService.loginUser(loginBody);
+        if (jwt == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }else {
+            LoginResponse loginResponse = new LoginResponse();
+            loginResponse.setJwt(jwt);
+            return ResponseEntity.ok().body(loginResponse);
         }
     }
 }
